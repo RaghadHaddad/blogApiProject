@@ -9,8 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 class Category extends Model
 {
     use HasFactory;
+    protected $table='category';
     protected $fillable=['name'];
-    use HasFactory;
 
    /**
     * Get all of the posts for the Catergory
