@@ -19,3 +19,10 @@ Route::group(['middleware' => 'api','prefix' => 'auth'], function ($router) {
 Route::middleware('jwt.auth')->get('/users',function(Request $request){
     return auth()->user();
 });
+
+
+Route::get('/categories', [CategoryController::class, 'index']);
+Route::get('/category/{id}' , [CategoryController::class , 'show']);
+Route::post('/categories' , [CategoryController::class , 'store']);
+Route::post('/categories/{id}' , [CategoryController::class , 'update']);
+Route::post('/category/{id}' , [CategoryController::class , 'destroy']);
