@@ -128,6 +128,23 @@ class AuthController extends Controller
                 'message'=>'not found'
             ],400);
         }
+        public function check(Request $request,$id)
+        {
+            $user=User::find($id);
+            if($user)
+            {
+                $user->plan=$request->plan;
+                $user->save();
+                return response()->json([
+                    'date'=>$user->plan,
+                    'message'=>'successfully'
+                ],200);
+            }
+            return response()->json([
+                'data'=>null,
+                'message'=>'not found'
+            ],400);
+        }
         //Create New Token
         protected function createNewToken($token){
             return response()->json([

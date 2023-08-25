@@ -75,6 +75,7 @@ class PostController extends Controller
             $post->slug =$request->slug;
             $post->user_id = Auth::user()->id;
             $post->category_id = $request->category_id;
+            $post->post_type = $request->post_type;
             $post->save();
             // return $this->apiResponse(new PostResource($post), 'the post update', 201);
             return response()->json([

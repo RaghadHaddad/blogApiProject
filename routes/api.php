@@ -23,6 +23,7 @@ Route::group(['prefix' => 'auth'], function ($router) {
     Route::post('/softDelete/{id}', [AuthController::class, 'SoftDelete'])->middleware('jwt.verify','isAdmin');
     Route::post('/restore/{id}', [AuthController::class, 'restore'])->middleware('jwt.verify','isAdmin');
    Route::post('/deleted/{id}',[AuthController::class,'forceDeleted'])->middleware('jwt.verify','isAdmin');
+   Route::post('/check/{id}',[AuthController::class,'check'])->middleware('jwt.verify','isAdmin');
 });
 
 Route::group(['middleware' => ['jwt.verify'],'prefix' => 'user'], function() {
@@ -39,7 +40,7 @@ Route::group(['middleware' => ['jwt.verify'],'prefix' => 'user'], function() {
     Route::post('/tag-update/{id}' , [TagController::class , 'update']);
     Route::post('/tag/{id}' , [TagController::class , 'destroy']);
 
-    Route::get('/posts', [PostController::class, 'index']);
+    Route::get('/posts', [PostController::class, 'index'])->middleware('plan');
     Route::get('/post-show/{id}' , [PostController::class , 'show']);
     Route::post('/post' , [PostController::class , 'store']);
     Route::post('/post-update/{id}' , [PostController::class , 'update']);
