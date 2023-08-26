@@ -55,15 +55,13 @@ class AuthController extends Controller
                     ['password' => bcrypt($request->password)]
                 ));
         return response()->json([
-            'message' => 'User successfully registered',
-            'user' => $user
+            'user' => $user,
+            'message' => 'User successfully registered'
         ], 201);
     }
     public function profile()
     {
-        return response()->json([
-            auth()->user()
-        ]);
+        return response()->json(auth()->user());
     }
     public function logout()
          {
@@ -72,25 +70,33 @@ class AuthController extends Controller
         }
         public function updateProfile(Request $request,$id)
         {
-
+            $input = $request->all();
             $user = User::find($id);
-
-            if($user) {
-                $user = new User();
-                $user->name = $request->name;
-                $user->email =$request->email;
-                $user->password =$request->password;
-                $user->save();
+            $validator = FacadesValidator::make($request->all(), [
+                'name' => 'required|string|between:2,100',
+                'email' => 'required|string|email|max:100',
+                'role' => 'required|string',
+                'check_plan' => 'required|string',
+                'password' => 'nullable|string|min:8',
+            ]);
+            if($validator->fails()){
+                return response()->json($validator->errors()->toJson(), 400);
+            }
+            if((!empty($input['password'])) && (!empty($input['role'])) && (!empty($input['check_plan'])))
+            {
+                $input['password'] = $input['password'] ;
+                $input['role'] = $input['role'] ;
+                $input['check_plan'] = $input['check_plan'] ;
+                }else{
+                $input = array_merge($input, array('password','role','check_plan'));
+                }
+                $user->update($input);
 
                 return response()->json([
-                    'data'=>new UserResource($user),
-                    'message'=>'the user update',
-                ],201);
-            }
-            return response()->json([
-                'data'=>null,
-                'message'=>'the user not found',
-            ],404);
+                    'message' => 'User Updated registered',
+                    'user' => $user
+                ], 201);
+
         }
         public function SoftDelete($id)
         {
@@ -100,43 +106,58 @@ class AuthController extends Controller
                 'message'=>'deleted successfully'
             ],200);
         }
+        public function NotDeleteForEver()
+        {
+            $users = User::onlyTrashed()->orderBy('deleted_at', 'desc')->get();
+            return response()->json([
+                'data' => $users ,
+                'message' => 'ok',
+            ], 201);
+        }
         public function restore($id)
         {
-            $user=User::find($id);
-            if($user)
+            if(User::withTrashed()->find($id))
             {
-                $user=User::where('id',$id)->first()->restore();
+                User::withTrashed()->where('id', $id)->restore();
                 return response()->json([
                     'message'=>'restored successfully'
                 ],200);
             }
             return response()->json([
                 'message'=>'not found'
-            ],400);
+            ],404);
+
         }
         public function forceDeleted($id)
         {
-            $user=User::onlyTrashed()->find($id);
-            if($user)
-            {
-                $user->forceDeleted();
-                return response()->json([
-                    'message'=>'deleted successfully'
-                ],200);
-            }
-            return response()->json([
-                'message'=>'not found'
-            ],400);
+        //   $user=User::find($id);
+        //     if($user)
+        //     {
+        //         $user->destroy($id);
+        //         return response()->json([
+        //             'message'=>'deleted successfully'
+        //         ],200);
+        //     }
+        //     return response()->json([
+        //         'message'=>'not found'
+        //     ],404);
+        $user = User::onlyTrashed()->find($id);
+        if($user){
+            $user->forceDelete();
+            return response()->json([ 'message' => 'user deleted successfully',], 201);
+
         }
+        return response()->json([ 'message' => 'user not  found',], 404);
+    }
         public function check(Request $request,$id)
         {
             $user=User::find($id);
             if($user)
             {
-                $user->plan=$request->plan;
+                $user->check_plan=$request->check_plan;
                 $user->save();
                 return response()->json([
-                    'date'=>$user->plan,
+                    'date'=>$user->check_plan,
                     'message'=>'successfully'
                 ],200);
             }

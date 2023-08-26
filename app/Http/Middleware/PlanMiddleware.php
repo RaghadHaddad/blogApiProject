@@ -17,13 +17,13 @@ class PlanMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         $user=Auth::user();
-        if($user->plan == 'free')
+        if($user->check_plan == 'free')
         {
-         $request->merge(['post-type'=>'free']);
+         $request->merge(['post_type'=>'free']);
          return $next($request);
         }
         else{
-            $request->merge(['post-type'=>'paid']);
+            $request->merge(['post_type'=>'paid']);
             return $next($request);
         }
 

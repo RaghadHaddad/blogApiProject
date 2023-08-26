@@ -18,9 +18,10 @@ Route::group(['prefix' => 'auth'], function ($router) {
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [AuthController::class, 'register']);
     Route::get('/user-profile', [AuthController::class, 'profile'])->middleware('jwt.verify');
-    Route::post('/update-profile', [AuthController::class, 'updateProfile'])->middleware('jwt.verify');
+    Route::post('/update-profile/{id}', [AuthController::class, 'updateProfile'])->middleware('jwt.verify');
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/softDelete/{id}', [AuthController::class, 'SoftDelete'])->middleware('jwt.verify','isAdmin');
+    Route::get('/onlyTashed', [AuthController::class, 'NotDeleteForEver'])->middleware('jwt.verify','isAdmin');
     Route::post('/restore/{id}', [AuthController::class, 'restore'])->middleware('jwt.verify','isAdmin');
    Route::post('/deleted/{id}',[AuthController::class,'forceDeleted'])->middleware('jwt.verify','isAdmin');
    Route::post('/check/{id}',[AuthController::class,'check'])->middleware('jwt.verify','isAdmin');

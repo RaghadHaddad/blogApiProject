@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('slug')->nullable();
             $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('category_id')->references('id')->on('category')->onUpdate('cascade')->onDelete('cascade');
-            $table->enum('post_type ',['free','paid '])->default('free');
+            $table->enum('post_type',['free','paid '])->default('free');
             $table->timestamps();
         });
     }

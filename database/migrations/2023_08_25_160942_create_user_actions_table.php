@@ -13,12 +13,11 @@ return new class extends Migration
     {
         Schema::create('user_actions', function (Blueprint $table) {
             $table->id();
-            $table->increments('id');
             $table->integer('user_id')->unsigned()->nullable();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            // $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('action');  // created / updated / deleted
             $table->string('action_model')->nullable();
-            $table->integer('action_id')->nullable();  // CRUD entry ID   
+            $table->integer('action_id')->nullable();  // CRUD entry ID
             $table->timestamps();
         });
     }
