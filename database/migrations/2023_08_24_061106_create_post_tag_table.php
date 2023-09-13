@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('post_tag', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('post_id')->unsigned();
-            $table->bigInteger('tag_id')->unsigned();
-            $table->foreign('post_id')->references('id')->on('post')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('tag_id')->references('id')->on('tag')->onDelete('cascade')->onUpdate('cascade');
+            $table->unsignedBigInteger('post_id');
+            $table->unsignedBigInteger('tag_id');
+            $table->index('post_id')->references('id')->on('post')->onDelete('cascade')->onUpdate('cascade');
+            $table->index('tag_id')->references('id')->on('post')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
     }
