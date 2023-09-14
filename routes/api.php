@@ -3,6 +3,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ImageController;
 use App\Http\Controllers\TagController;
 /*
 |--------------------------------------------------------------------------
@@ -61,5 +62,10 @@ Route::group(['middleware' => ['jwt.verify'],'prefix' => 'user'], function() {
     Route::post('/images/{id}' , [ImageController::class , 'update']);
     Route::post('/image/{id}' , [ImageController::class , 'destroy']);
 
+     //Routes for polymorphicm relationshipe
+    Route::post('ImagesPost/{id}',[ImageController::class,'showImagePost']);
+    Route::post('ImagesUser/{id}',[ImageController::class,'showImageUser']);
+    Route::post('AddImagesPost/{id}',[ImageController::class,'AddImagePost']);
+    Route::post('AddImagesUser/{id}',[ImageController::class,'AddImageUser']);
 });
 

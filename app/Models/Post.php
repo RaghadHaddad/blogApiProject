@@ -16,9 +16,9 @@ class Post extends Model
     {
         return $this->belongsToMany(Tag::class, 'post_tag', 'post_id', 'tag_id');
     }
-    public function images(): HasMany
+    public function images()
     {
-        return $this->hasMany(Image::class);
+        return $this->morphMany(Images::class,'imageable');
     }
     public function category(): BelongsTo
     {

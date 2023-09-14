@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('image', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('post_id')->unsigned()->nullable();
             $table->string('fileName');
-            $table->foreign('post_id')->references('id')->on('post')->onDelete('cascade')->onUpdate('cascade');
+            $table->string('type');
+            $table->morphs('imageable');
             $table->timestamps();
         });
     }

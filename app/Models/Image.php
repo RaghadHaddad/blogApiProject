@@ -9,15 +9,15 @@ use Illuminate\Database\Eloquent\Model;
 class Image extends Model
 {
     use HasFactory;
-    protected $fillable=['fileName' , 'post_id'];
+    protected $fillable=['fileName' , 'type'];
     /**
      * Get the user that owns the Image
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function post(): BelongsTo
+    public function imageable()
     {
-        return $this->belongsTo(Post::class , 'post_id', 'id');
+       return  $this->morphTo();
     }
 
 }
