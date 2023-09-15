@@ -53,18 +53,5 @@ Route::group(['middleware' => ['jwt.verify'],'prefix' => 'user'], function() {
     Route::post('/post-tag-add/{id}' , [PostTagController::class , 'addTags']);
     Route::post('/post-tag-delete/{id}' , [PostTagController::class , 'deleteTag']);
     Route::get('/post-tags-show/{id}' , [PostTagController::class , 'show']);
-
-
-
-    Route::get('/images', [ImageController::class, 'index']);
-    Route::get('/image/{id}' , [ImageController::class , 'show']);
-    Route::post('/images' , [ImageController::class , 'store']);
-    Route::post('/images/{id}' , [ImageController::class , 'update']);
-    Route::post('/image/{id}' , [ImageController::class , 'destroy']);
-     //Routes for polymorphicm relationshipe
-    Route::post('ImagesPost/{id}',[ImageController::class,'showImagePost']);
-    Route::post('ImagesUser/{id}',[ImageController::class,'showImageUser']);
-    Route::post('AddImagesPost/{id}',[ImageController::class,'AddImagePost']);
-    Route::post('AddImagesUser/{id}',[ImageController::class,'AddImageUser']);
 });
 
