@@ -5,10 +5,12 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator as FacadesValidator;
 use App\Http\Resources\UserResource;
+use App\Traits\formateTrait;
 use Validator;
 
 class AuthController extends Controller
 {
+    use formateTrait;
     /**
      * Create a new AuthController instance.
      *
@@ -22,16 +24,18 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function login(Request $request){
+    public function login(Request $request)
+    {
      $validator = FacadesValidator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required|string|min:6',
         ]);
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            return $this->ApiFormate(null,$validator->errors(),401);
         }
-        if (! $token = auth()->attempt($validator->validated())) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+        if (! $token = auth()->attempt($validator->validated())) 
+        {
+            return $this->ApiFormate(null,'Unauthorized',401);
         }
         return $this->createNewToken($token);
     }
@@ -54,19 +58,16 @@ class AuthController extends Controller
                     $validator->validated(),
                     ['password' => bcrypt($request->password)]
                 ));
-        return response()->json([
-            'user' => $user,
-            'message' => 'User successfully registered'
-        ], 201);
+        return $this->ApiFormate($user,'User successfully registered',201);
     }
     public function profile()
     {
-        return response()->json(auth()->user());
+        return $this->ApiFormate(auth()->user(),'');
     }
     public function logout()
          {
              auth()->logout();
-             return response()->json(['message'=>'successfully logout']);
+             return $this->ApiFormate(null,'successfully logout');
         }
         public function updateProfile(Request $request,$id)
         {
@@ -80,7 +81,7 @@ class AuthController extends Controller
                 'password' => 'nullable|string|min:8',
             ]);
             if($validator->fails()){
-                return response()->json($validator->errors()->toJson(), 400);
+                return $this->ApiFormate(null,$validator->errors()->toJson());
             }
             if((!empty($input['password'])) && (!empty($input['role'])) && (!empty($input['check_plan'])))
             {
@@ -91,63 +92,37 @@ class AuthController extends Controller
                 $input = array_merge($input, array('password','role','check_plan'));
                 }
                 $user->update($input);
-
-                return response()->json([
-                    'message' => 'User Updated registered',
-                    'user' => $user
-                ], 201);
+                return $this->ApiFormate($user,'User Updated registered',201);
 
         }
         public function SoftDelete($id)
         {
             $user=User::find($id);
             $user->delete();
-            return response()->json([
-                'message'=>'deleted successfully'
-            ],200);
+            return $this->ApiFormate(null,'deleted successfully',200);
         }
         public function NotDeleteForEver()
         {
             $users = User::onlyTrashed()->orderBy('deleted_at', 'desc')->get();
-            return response()->json([
-                'data' => $users ,
-                'message' => 'ok',
-            ], 201);
+            return $this->ApiFormate($users,'ok',201);
         }
         public function restore($id)
         {
             if(User::withTrashed()->find($id))
             {
                 User::withTrashed()->where('id', $id)->restore();
-                return response()->json([
-                    'message'=>'restored successfully'
-                ],200);
+                return $this->ApiFormate(null,'restored successfully',200);
             }
-            return response()->json([
-                'message'=>'not found'
-            ],404);
-
+            return $this->ApiFormate(null,'not found',404);
         }
         public function forceDeleted($id)
         {
-        //   $user=User::find($id);
-        //     if($user)
-        //     {
-        //         $user->destroy($id);
-        //         return response()->json([
-        //             'message'=>'deleted successfully'
-        //         ],200);
-        //     }
-        //     return response()->json([
-        //         'message'=>'not found'
-        //     ],404);
         $user = User::onlyTrashed()->find($id);
         if($user){
             $user->forceDelete();
-            return response()->json([ 'message' => 'user deleted successfully',], 201);
-
+            return $this->ApiFormate(null,'user deleted successfully',201);
         }
-        return response()->json([ 'message' => 'user not  found',], 404);
+        return $this->ApiFormate(null,'user not  found',404);
     }
         public function check(Request $request,$id)
         {
@@ -156,15 +131,9 @@ class AuthController extends Controller
             {
                 $user->check_plan=$request->check_plan;
                 $user->save();
-                return response()->json([
-                    'date'=>$user->check_plan,
-                    'message'=>'successfully'
-                ],200);
+                return $this->ApiFormate($user->check_plan,'successfully',200);
             }
-            return response()->json([
-                'data'=>null,
-                'message'=>'not found'
-            ],400);
+            return $this->ApiFormate(null,'not found',400);
         }
         //Create New Token
         protected function createNewToken($token){

@@ -10,55 +10,27 @@ use App\Http\Resources\PostResource;
 use App\Http\Requests\PostRequest;
 use App\Models\Image;
 use App\Models\Post;
+use App\Traits\formateTrait;
 
 class PostController extends Controller
 {
+    use formateTrait;
     public function index()
     {
-
         $post= Post::paginate(5);
         $postWithImage=Post::with('images')->get();
         $posts = PostResource::collection($postWithImage);
-        return response()->json([
-            'data'=>$posts,
-            'message'=>'',
-        ],200);
+        return $this->ApiFormate($posts,'',200);
     }
-/* public function showImagePost($id)
-      {
-        $post=Post::findOrFail($id);
-        $imageAll=$post->with('images')->get();
-        if($imageAll)
-        {
-            return response()->json([
-                'data'=>new ImageResource($imageAll),
-                'message'=>'ok',
-              ],200);
-        }
-        return response()->json([
-            'data'=>null,
-            'message'=>'the images for post'.$id.' not found',
-          ],404);
-      }*/
-
-
     public function show(PostRequest $request,$id)
     {
-
         $post_type=$request->post_type;
         $post = Post::find($id)->where('post_type',$post_type)->with('images');
         if($post) {
-            return response()->json([
-                'data'=>new PostResource($post),
-                'message'=>'ok',
-            ],200);
+            return $this->ApiFormate(new PostResource($post),'ok',200);
         }
-        return response()->json([
-            'data'=>null,
-            'message'=>'the post not found',
-        ],404);
+        return $this->ApiFormate(null,'the post not found',404);
     }
-    //store
     public function store(PostRequest $request)
     {
         $post = new Post();
@@ -80,17 +52,10 @@ class PostController extends Controller
                     'type'=>$type
                 ]);
             }
-           
         }
         $post->save();
-        return response()->json([
-            'data'=>new PostResource($post),
-            'message'=>'ok',
-        ],200);
+        return $this->ApiFormate(new PostResource($post),'ok',200);
     }
-
-
-    //update
     public function update(PostRequest $request, $id)
     {
         $post = Post::find($id);
@@ -98,10 +63,10 @@ class PostController extends Controller
         {
             if($request->hasFile('fileName'))
              {
-            foreach($post->images as $image)
-            {
+               foreach($post->images as $image)
+               {
                 DeleteOldImages($image);
-            }
+               }
             foreach($request->file('images') as $image)
             {
                 $type=$request->type;
@@ -120,21 +85,15 @@ class PostController extends Controller
             $post->category_id = $request->category_id;
             $post->post_type = $request->post_type;
             $post->save();
-            return response()->json([
-                'data'=>new PostResource($post),
-                'message'=>'the post update',
-            ],201);
+            return $this->ApiFormate(new PostResource($post),'the post update',200);
         }
-        return response()->json([
-            'data'=>null,
-            'message'=>'the post not found',
-        ],404);
+        return $this->ApiFormate(null,'the post not found',404);
         }
-    //delete
     public function destroy($id)
     {
         $post = Post::find($id);
-        if($post) {
+        if($post)
+        {
             if($post->images)
             {
                 foreach($post->images as $image)
@@ -144,32 +103,20 @@ class PostController extends Controller
                 }
             }
             $post->delete($id);
-            return response()->json([
-                'data'=>null,
-                'message'=>'the post deleted',
-            ],200);
+            return $this->ApiFormate(null,'the post deleted',200);
         }
-        return response()->json([
-            'data'=>null,
-            'message'=>'the post not found',
-        ],404);
-
+        return $this->ApiFormate(null,'the post not found',404);
     }
-
-    //search
     public function search($name)
     {
        $result = Post::where("title", "like", "%".$name."%")->get();
-       if(count($result)){
-        return response()->json([
-            'data'=>$result,
-            'message'=>'ok',
-        ],201);
-       }else{
-        return response()->json([
-            'data'=>null,
-            'message'=>'There is no post title it like'.$name,
-        ],404);
+       if(count($result))
+       {
+        return $this->ApiFormate($result,'ok',201);
+       }
+       else
+       {
+        return $this->ApiFormate(null,'There is no post title it like'.$name,404);
        }
 
     }

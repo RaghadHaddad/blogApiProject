@@ -61,7 +61,6 @@ Route::group(['middleware' => ['jwt.verify'],'prefix' => 'user'], function() {
     Route::post('/images' , [ImageController::class , 'store']);
     Route::post('/images/{id}' , [ImageController::class , 'update']);
     Route::post('/image/{id}' , [ImageController::class , 'destroy']);
-
      //Routes for polymorphicm relationshipe
     Route::post('ImagesPost/{id}',[ImageController::class,'showImagePost']);
     Route::post('ImagesUser/{id}',[ImageController::class,'showImageUser']);
