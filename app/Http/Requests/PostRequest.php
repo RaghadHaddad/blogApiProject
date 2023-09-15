@@ -27,7 +27,9 @@ class PostRequest extends FormRequest
         return [
             'title' => 'required|string|max:50' ,
             'content' => 'required|string|max:500' ,
-            'slug' => 'required|string'
+            'slug' => 'required|string',
+            'post_type'=>'required|in:free,paid',
+            'category_id'=>'required'
         ];
     }
     public function messages(){
@@ -35,6 +37,7 @@ class PostRequest extends FormRequest
              'title.required' => 'Title is required and must not be greater than 50 characters. ' ,
              'content.required' => 'Content is required and must not be greater than 500 characters. ' ,
              'slug.required' => 'slug must be string ' ,
+             'post_type.in'=>'paid / free'
 
         ];
     }

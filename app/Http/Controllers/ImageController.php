@@ -32,17 +32,16 @@ class ImageController extends Controller
             'message'=>'the image not found',
           ],404);
       }
-       public function store(ImageRequest $request){
-
-
+       public function store(ImageRequest $request)
+       {
+        $image = new Image();
+        $image->type = $request->type;
           if($request->has('fileName')){
-              $image = new Image();
+
               $file = $request->fileName;
-              $name = time().'.'.$file->getClientOriginalExtension();
-              $path = public_path().'/uploads';
-              $image->fileName =$name ;
-              $file->move( $path , $name );
-              $image->post_id = $request->post_id;
+              $destination='images/posts';
+              $uploadImagePath=uploadImage($file,$destination);
+              $image-
               $image->save();
 
             //   return $this->apiResponse(new ImageResource($image), 'Image Uploaded Successfuly', 201);
