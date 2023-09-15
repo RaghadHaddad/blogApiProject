@@ -52,17 +52,41 @@ class AuthController extends Controller
             'password' => 'required|string|min:6',
         ]);
         if($validator->fails()){
-            return response()->json($validator->errors()->toJson(), 400);
+            return $this->ApiFormate(null,$validator->errors()->toJson(),400);
         }
         $user = User::create(array_merge(
-                    $validator->validated(),
-                    ['password' => bcrypt($request->password)]
-                ));
+            $validator->validated(),
+            ['password' => bcrypt($request->password)]
+        ));
+        if($request->hasFile('fileName'))
+        {
+            $type=$request->type;
+            $file=$request->fileName;
+            $destination='images/users';
+                   $uploadImagePath=uploadImage($file,$destination);
+                   $user->images()->create([
+                       'fileName'=>$uploadImagePath,
+                       'type'=>$type
+                   ]);
+        }
         return $this->ApiFormate($user,'User successfully registered',201);
     }
-    public function profile()
+    public function profile(Request $request)
     {
-        return $this->ApiFormate(auth()->user(),'');
+        $user=new User;
+        if($request->hasFile('fileName'))
+        {
+            $type=$request->type;
+            $file=$request->fileName;
+            $destination='images/users';
+                   $uploadImagePath=uploadImage($file,$destination);
+                   $user->images()->create([
+                       'fileName'=>$uploadImagePath,
+                       'type'=>$type
+                   ]);
+        }
+        $user->save();
+        return $this->ApiFormate($user,'');
     }
     public function logout()
          {
@@ -71,7 +95,6 @@ class AuthController extends Controller
         }
         public function updateProfile(Request $request,$id)
         {
-            $input = $request->all();
             $user = User::find($id);
             $validator = FacadesValidator::make($request->all(), [
                 'name' => 'required|string|between:2,100',
@@ -83,17 +106,27 @@ class AuthController extends Controller
             if($validator->fails()){
                 return $this->ApiFormate(null,$validator->errors()->toJson());
             }
-            if((!empty($input['password'])) && (!empty($input['role'])) && (!empty($input['check_plan'])))
+            if($user)
             {
-                $input['password'] = $input['password'] ;
-                $input['role'] = $input['role'] ;
-                $input['check_plan'] = $input['check_plan'] ;
-                }else{
-                $input = array_merge($input, array('password','role','check_plan'));
-                }
-                $user->update($input);
-                return $this->ApiFormate($user,'User Updated registered',201);
-
+                if($request->hasFile('fileName'))
+                {
+                  $image=$user->images;
+                  DeleteOldImages($image);
+                  $type=$request->type;
+                  $destination='images/users';
+                  $uploadImagePath=uploadImage($image,$destination);
+                  $user->images()->create([
+                       'path'=>$uploadImagePath,
+                       'type'=>$type
+                   ]);
+               }
+               $user->password=$request->password;
+               $user->role=$request->role;
+               $user->check_plan=$request->check_plan;
+               $user->update($user);
+               return $this->ApiFormate($user,'User Updated registered',201);
+            }
+            return $this->ApiFormate($user,'User not found',201);
         }
         public function SoftDelete($id)
         {

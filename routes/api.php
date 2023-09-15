@@ -18,7 +18,7 @@ use App\Http\Controllers\TagController;
 Route::group(['prefix' => 'auth'], function ($router) {
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [AuthController::class, 'register']);
-    Route::get('/user-profile', [AuthController::class, 'profile'])->middleware('jwt.verify');
+    Route::post('/user-profile', [AuthController::class, 'profile'])->middleware('jwt.verify');
     Route::post('/update-profile/{id}', [AuthController::class, 'updateProfile'])->middleware('jwt.verify');
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/softDelete/{id}', [AuthController::class, 'SoftDelete'])->middleware('jwt.verify','isAdmin');

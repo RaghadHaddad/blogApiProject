@@ -96,24 +96,6 @@ class ImageController extends Controller
           ],404);
       }
 
-      //Function for polymorphicm relationshipe
-
-      public function showImagePost($id)
-      {
-        $post=Post::findOrFail($id);
-        $imageAll=$post->with('images')->get();
-        if($imageAll)
-        {
-            return response()->json([
-                'data'=>new ImageResource($imageAll),
-                'message'=>'ok',
-              ],200);
-        }
-        return response()->json([
-            'data'=>null,
-            'message'=>'the images for post'.$id.' not found',
-          ],404);
-      }
       public function showImageUser($id)
       {
         $user=User::findOrFail($id);
@@ -145,23 +127,6 @@ class ImageController extends Controller
             'data'=>new ImageResource($imageAll),
             'message'=>'the images for user'.$id.'already found',
           ],404);
-      }
-      public function AddImagePost(ImageRequest $request,$id)
-      {
-        $post=Post::findOrFail($id);
-        $imageAll=$post->images;
-        if(!$imageAll)
-        {
-           $imageAll=$imageAll->images()->create([
-            'fileName'=>$request->fileName,
-            'type'=>$request->type
-           ]);
-        }
-        return response()->json([
-            'data'=>new ImageResource($imageAll),
-            'message'=>'the images for post'.$id.'already found',
-          ],404);
-
       }
  }
 
